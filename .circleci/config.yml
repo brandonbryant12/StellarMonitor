@@ -16,7 +16,7 @@ jobs:
       - run: 
           name: Push Docker image to repo
           command: |
-            docker tag project_stellar:latest ${DOCKER_REPO}/project_stellar:latest 
-            docker push ${DOCKER_REPO}/project_stellar:latest
-            docker tag project_stellar:latest ${DOCKER_REPO}/project_stellar:${CIRCLE_SHA1}
-            docker push ${DOCKER_REPO}/project_stellar:${CIRCLE_SHA1}
+            docker tag project_stellar:latest ${DOCKER_REPO}/stellar_monitor:latest 
+            docker push ${DOCKER_REPO}/stellar_monitor:latest
+            docker tag project_stellar:latest ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
+            docker push ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
