@@ -16,5 +16,16 @@ services:
     depends_on:
       - rabbitmq
     command: ./wait-for-it.sh rabbitmq:5672 -- ./main
+  stellar_payments:
+    build: .
+    volumes:
+       - data:/data
+    env_file:
+      - .env
+    links: 
+      - "rabbitmq:rabbitmq"
+    depends_on:
+      - rabbitmq
+    command: ./wait-for-it.sh rabbitmq:5672 -- ./receive.go
 volumes:
   data:

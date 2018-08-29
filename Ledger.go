@@ -18,9 +18,12 @@ type Ledger struct {
 			Paging_Token   string `json:"paging_token"`
 			Source_Account string `json:"source_account"`
 			Type           string `json:"type"`
+			TypeI          string `json:"type_i"`
 			CreatedAt      string `json:"created_at"`
 			Hash           string `json:"transaction_hash"`
-			Currency       string `json:"asset_type"`
+			AssetType      string `json:"asset_type"`
+			AssetCode      string `json:"asset_code"`
+			AssetIssuer    string `json:"asset_issuer"`
 			From           string `json:"from"`
 			To             string `json:"to"`
 			Amount         string `json:"amount"`

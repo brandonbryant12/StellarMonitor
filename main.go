@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	//	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
 	"io/ioutil"
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	outfile, _ = os.Create("/data/ethLogs.log") // update path for your needs
+	outfile, _ = os.Create("/data/stellarLogs.log") // update path for your needs
 	l          = log.New(outfile, "", 0)
 )
 
@@ -63,7 +63,6 @@ func main() {
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 	l.Printf("Opened amqp connection")
-
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -99,6 +98,7 @@ func main() {
 		}
 		defer resp.Body.Close()
 		content, _ := ioutil.ReadAll(resp.Body)
+
 		if strings.Contains(string(content), "Resource Missing") {
 			l.Printf(fmt.Sprintf("Ledger not found number: %v", strconv.FormatInt(nextLedgerNumber, 10)))
 			time.Sleep(2000 * time.Millisecond)
@@ -106,41 +106,57 @@ func main() {
 		}
 		fmt.Println((strconv.FormatInt(nextLedgerNumber, 10)))
 		writeLastLedgerNumber(strconv.FormatInt(nextLedgerNumber, 10))
-		var ledger Ledger
-		json.Unmarshal(content, &ledger)
-		for i := range ledger.Embedded.Record {
-			if ledger.Embedded.Record[i].Type != "payment" {
-				continue
-			}
-			if ledger.Embedded.Record[i].Currency == "native" {
-				ledger.Embedded.Record[i].Currency = "XLM"
-			}
-			payment := Payment{
-				Currency: ledger.Embedded.Record[i].Currency,
-				Address:  ledger.Embedded.Record[i].To,
-				Amount:   ledger.Embedded.Record[i].Amount,
-				Hash:     ledger.Embedded.Record[i].Hash,
-			}
 
-			paymentJSON, err := json.Marshal(payment)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			err = ch.Publish(
-				"stellar",  // exchange
-				"payments", // routing key
-				false,      // mandatory
-				false,      // immediate
-				amqp.Publishing{
-					DeliveryMode: amqp.Persistent,
-					ContentType:  "text/plain",
-					Body:         []byte(paymentJSON),
-				})
-			l.Printf(" [x] Sent %s", payment.String())
-			failOnError(err, "Failed to publish a message")
+		err = ch.Publish(
+			"stellar",   // exchange
+			"responses", // routing key
+			false,       // mandatory
+			false,       // immediate
+			amqp.Publishing{
+				DeliveryMode: amqp.Persistent,
+				ContentType:  "text/plain",
+				Body:         []byte(content),
+			})
+		l.Printf(" [x] Sent %s", string(content))
+		failOnError(err, "Failed to publish a message")
 
-		}
+		/*		var ledger Ledger
+				json.Unmarshal(content, &ledger)
+
+				for i := range ledger.Embedded.Record {
+
+					if ledger.Embedded.Record[i].Type != "payment" {
+						continue
+					}
+					if ledger.Embedded.Record[i].AssetType == "native" {
+						ledger.Embedded.Record[i].AssetCode = "XLM"
+					}
+					payment := Payment{
+						Currency: ledger.Embedded.Record[i].AssetCode,
+						Address:  ledger.Embedded.Record[i].To,
+						Amount:   ledger.Embedded.Record[i].Amount,
+						Hash:     ledger.Embedded.Record[i].Hash,
+					}
+
+					paymentJSON, err := json.Marshal(payment)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					err = ch.Publish(
+						"stellar",  // exchange
+						"payments", // routing key
+						false,      // mandatory
+						false,      // immediate
+						amqp.Publishing{
+							DeliveryMode: amqp.Persistent,
+							ContentType:  "text/plain",
+							Body:         []byte(paymentJSON),
+						})
+					l.Printf(" [x] Sent %s", payment.String())
+					failOnError(err, "Failed to publish a message")
+
+				}*/
 	}
 
 }
