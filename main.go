@@ -112,11 +112,11 @@ func main() {
 			if ledger.Embedded.Record[i].Type != "payment" {
 				continue
 			}
-			if ledger.Embedded.Record[i].Currency == "native" {
-				ledger.Embedded.Record[i].Currency = "XLM"
+			if ledger.Embedded.Record[i].AssetType == "native" {
+				ledger.Embedded.Record[i].AssetCode = "XLM"
 			}
 			payment := Payment{
-				Currency: ledger.Embedded.Record[i].Currency,
+				Currency: ledger.Embedded.Record[i].AssetCode,
 				Address:  ledger.Embedded.Record[i].To,
 				Amount:   ledger.Embedded.Record[i].Amount,
 				Hash:     ledger.Embedded.Record[i].Hash,

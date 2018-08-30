@@ -20,3 +20,6 @@ jobs:
             docker push ${DOCKER_REPO}/stellar_monitor:latest
             docker tag project_stellar:latest ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
             docker push ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
+      - run:
+          name: Deploy image to server 
+          command: ssh chef@199.188.207.179 sudo chef-client -o recipe[anypay_xlm::oracle]

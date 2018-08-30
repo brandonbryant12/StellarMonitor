@@ -1,12 +1,12 @@
 version: '3'
-services:
+services: 
   rabbitmq:
     image: "rabbitmq:3-management"
-    ports:
+    ports: 
       - "5672:5672"
       - "15672:15672"
-  stellar:
-    build: .
+  blockchain_listner:
+    build: . 
     volumes:
       - data:/data
     env_file:
@@ -15,6 +15,17 @@ services:
       - "rabbitmq:rabbitmq"
     depends_on:
       - rabbitmq
-    command: ./wait-for-it.sh rabbitmq:5672 -- ./main
+    command: ./wait-for-it.sh rabbitmq:5672 -- ./BlockchainListner
+  payment_listner:
+    build: . 
+    volumes:
+      - data:/data
+    env_file:
+      - .env
+    links:
+      - "rabbitmq:rabbitmq"
+    depends_on:
+      - rabbitmq
+    command: ./wait-for-it.sh rabbitmq:5672 -- ./PaymentListener
 volumes:
   data:
