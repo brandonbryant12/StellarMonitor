@@ -13,10 +13,14 @@ jobs:
       - run: 
           name: Push Docker image to repo
           command: |
-            docker tag project_stellar:latest ${DOCKER_REPO}/stellar_monitor:latest 
-            docker push ${DOCKER_REPO}/stellar_monitor:latest
-            docker tag project_stellar:latest ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
-            docker push ${DOCKER_REPO}/stellar_monitor:${CIRCLE_SHA1}
+            docker tag project_blockchain_listener ${DOCKER_REPO}/stellar_ledger_listener:latest 
+            docker push ${DOCKER_REPO}/stellar_ledger_listener:latest
+            docker tag project_blockchain_listener:latest ${DOCKER_REPO}/stellar_ledger_listener:${CIRCLE_SHA1}
+            docker push ${DOCKER_REPO}/stellar_ledger_listener:${CIRCLE_SHA1}
+            docker tag project_payment_listener ${DOCKER_REPO}/stellar_payment_listener:latest 
+            docker push ${DOCKER_REPO}/stellar_payment_listener:latest
+            docker tag project_payment_listener:latest ${DOCKER_REPO}/stellar_payment_listener:${CIRCLE_SHA1}
+            docker push ${DOCKER_REPO}/stellar_payment_listener:${CIRCLE_SHA1}
       - run:
           name: Deploy image to server 
           command: ssh chef@199.188.207.179 sudo chef-client -o recipe[anypay_xlm::oracle]
