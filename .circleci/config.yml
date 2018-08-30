@@ -7,12 +7,6 @@ jobs:
       - run:
           name: Docker build
           command: docker-compose build 
-      - run:
-          name: Unit Tests 
-          command: docker-compose run blockchain_listener go test
-      - run:
-          name: Unit Tests 
-          command: docker-compose run payment_listener go test
       - run: 
           name: Docker login
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
