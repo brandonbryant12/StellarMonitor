@@ -75,10 +75,8 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			fmt.Println(string(d.Body))
 			var ledger Ledger
 			json.Unmarshal(d.Body, &ledger)
-			fmt.Println(ledger)
 			for i := range ledger.Embedded.Record {
 				if ledger.Embedded.Record[i].Type != "payment" {
 					continue
