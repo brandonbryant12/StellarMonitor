@@ -5,7 +5,7 @@ services:
     ports: 
       - "5672:5672"
       - "15672:15672"
-  blockchain_listner:
+  blockchain_listener:
     build: . 
     volumes:
       - data:/data
@@ -16,7 +16,7 @@ services:
     depends_on:
       - rabbitmq
     command: ./wait-for-it.sh rabbitmq:5672 -- ./BlockchainListner
-  payment_listner:
+  payment_listener:
     build: . 
     volumes:
       - data:/data
