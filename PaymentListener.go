@@ -78,38 +78,38 @@ func main() {
 			var ledger Ledger
 			json.Unmarshal(d.Body, &ledger)
 			for i := range ledger.Embedded.Record {
-				if ledger.Embedded.Record[i].Type != "payment" {
-					continue
-				}
 				if ledger.Embedded.Record[i].AssetType == "native" {
 					ledger.Embedded.Record[i].AssetCode = "XLM"
 				} else {
 					ledger.Embedded.Record[i].AssetCode = fmt.Sprintf("%v.%v", ledger.Embedded.Record[i].AssetCode, ledger.Embedded.Record[i].AssetIssuer)
 				}
-				payment := Payment{
-					Currency: ledger.Embedded.Record[i].AssetCode,
-					Address:  ledger.Embedded.Record[i].To,
-					Amount:   ledger.Embedded.Record[i].Amount,
-					Hash:     ledger.Embedded.Record[i].Hash,
-				}
+				if ledger.Embedded.Record[i].Type == "payment" {
 
-				paymentJSON, err := json.Marshal(payment)
-				if err != nil {
-					fmt.Println(err)
-					return
+					payment := Payment{
+						Currency: ledger.Embedded.Record[i].AssetCode,
+						Address:  ledger.Embedded.Record[i].To,
+						Amount:   ledger.Embedded.Record[i].Amount,
+						Hash:     ledger.Embedded.Record[i].Hash,
+					}
+
+					paymentJSON, err := json.Marshal(payment)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					err = ch.Publish(
+						"stellar",  // exchange
+						"payments", // routing key
+						false,      // mandatory
+						false,      // immediate
+						amqp.Publishing{
+							DeliveryMode: amqp.Persistent,
+							ContentType:  "text/plain",
+							Body:         []byte(paymentJSON),
+						})
+					l.Printf(" [x] Sent %s", payment.String())
+					failOnError(err, "Failed to publish a message")
 				}
-				err = ch.Publish(
-					"stellar",  // exchange
-					"payments", // routing key
-					false,      // mandatory
-					false,      // immediate
-					amqp.Publishing{
-						DeliveryMode: amqp.Persistent,
-						ContentType:  "text/plain",
-						Body:         []byte(paymentJSON),
-					})
-				fmt.Printf(" [x] Sent %s", payment.String())
-				failOnError(err, "Failed to publish a message")
 
 			}
 		}

@@ -15,7 +15,7 @@ services:
       - "rabbitmq:rabbitmq"
     depends_on:
       - rabbitmq
-    command: ./wait-for-it.sh rabbitmq:5672 -- ./BlockchainListner
+    command: ./wait-for-it.sh rabbitmq:5672 -- ./BlockchainListener
   payment_listener:
     build: . 
     volumes:
