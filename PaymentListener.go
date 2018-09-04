@@ -4,21 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
-	"log"
 	"os"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
 		panic(fmt.Sprintf("%s: %s", msg, err))
 	}
 }
-
-var (
-	outfile, _ = os.Create("/data/stellarPayments.log") // update path for your needs
-	l          = log.New(outfile, "", 0)
-)
 
 func main() {
 
@@ -107,7 +100,7 @@ func main() {
 							ContentType:  "text/plain",
 							Body:         []byte(paymentJSON),
 						})
-					l.Printf(" [x] Sent %s", payment.String())
+					fmt.Println(" [x] Sent %s", payment.String())
 					failOnError(err, "Failed to publish a message")
 				}
 
@@ -115,7 +108,7 @@ func main() {
 		}
 	}()
 
-	l.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	fmt.Println(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 
 }
