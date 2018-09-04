@@ -19,7 +19,7 @@ services:
   payment_listener:
     build: . 
     volumes:
-      - data:/data
+      - xlm_data:/data
     env_file:
       - .env
     links:
@@ -28,4 +28,4 @@ services:
       - rabbitmq
     command: ./wait-for-it.sh rabbitmq:5672 -- ./PaymentListener
 volumes:
-  data:
+  xlm_data:
